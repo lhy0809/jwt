@@ -25,14 +25,6 @@ public class SecurityConfig {
 	
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-		// http.addFilter(new MyFilter1());
-		// 오류 발생 > MyFilter1은 타입이 filter이기 때문에 SecurityFilter에 주입이 안 된다.
-		// addFilterBefore 또는 addFilterAfter을 통해 SecurityFilter의 어떤 filter를 실행하기 전/후에 실행해라.
-		http.addFilterBefore(new MyFilter2(), BasicAuthenticationFilter.class);
-		http.addFilterAfter(new MyFilter3(), BasicAuthenticationFilter.class);
-		// 순서 : security 필터 > 일반 필터 
-		// first security filter > ... > MyFilter2 > ... > BasicAuthenticationFilter > Myfilter3 > ... > last security filter > MyFilter1(일반 필터)
-		
 		http.csrf(AbstractHttpConfigurer::disable);
 		http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS) // stateless 상태로 만들겠다 > session을 사용하지 않겠다.
 		.and()
