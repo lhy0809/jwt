@@ -1,6 +1,7 @@
 package com.hyong.jwt.config.jwt;
 
 import java.io.IOException;
+import java.util.Date;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -12,6 +13,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.algorithms.Algorithm;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hyong.jwt.config.auth.PrincipalDetails;
 import com.hyong.jwt.model.User;
@@ -57,6 +60,18 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                                             FilterChain chain,
                                             Authentication authResult) throws IOException, ServletException {
 		System.out.println("인증이 완료 됨.");
+		PrincipalDetails principalDetails = (PrincipalDetails) authResult.getPrincipal();
+		
+		// Hash암호방식
+		String jwtToken = JWT.create()
+				.withSubject("cos토큰")
+				.withExpiresAt(new Date(System.currentTimeMillis()+(60000*10)))
+				.withClaim("id", principalDetails.getUser().getId())
+				.withClaim("username", principalDetails.getUser().getUsername())
+				.sign(Algorithm.HMAC512("cos"));
+	
+		response.addHeader("Authorization", "Bearer " + jwtToken);
+	
 		//super.successfulAuthentication(request, response, chain, authResult);
     }
 }
